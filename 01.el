@@ -1,8 +1,4 @@
-
-(defun current-line-empty-p ()
-  (save-excursion
-    (beginning-of-line)
-    (looking-at-p "[[:blank:]]*$")))
+(load-file "./util.el")
 
 (defun aoc/day1/part1 ()
   (interactive)
