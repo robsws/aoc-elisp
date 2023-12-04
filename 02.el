@@ -22,6 +22,21 @@
       (setq-local lines-remaining-p (= 0 (forward-line 1))))
     (message "Result: %s" id-sum)))
 
+(defun aoc/day2/part2 ()
+  (interactive)
+  (save-excursion
+    (setq-local lines-remaining-p t)
+    (setq-local possible-games-count 0)
+    (setq-local total-power 0)
+    
+    (goto-char (point-min))
+    (while lines-remaining-p
+      (unless (current-line-empty-p)
+	(setq-local game (aoc/day2/part1/parse-line-at-point))
+        (setq-local total-power (+ (aoc/day2/part2/power game) total-power)))
+      (setq-local lines-remaining-p (= 0 (forward-line 1))))
+    (message "Result: %s" total-power)))
+
 (defun aoc/day2/part1/parse-line-at-point ()
   (setq-local draws '())
   (setq-local current-draw '())
@@ -60,3 +75,27 @@
 	       (t nil))
 	 (aoc/day2/part1/is-valid-draw (cdr draw))))
     t))
+
+(defun aoc/day2/part2/power (game)
+  (*
+   (aoc/day2/part2/min-cubes-needed-of-colour game "red")
+   (aoc/day2/part2/min-cubes-needed-of-colour game "green")
+   (aoc/day2/part2/min-cubes-needed-of-colour game "blue")))
+
+(defun aoc/day2/part2/min-cubes-needed-of-colour (game colour)
+  (if game
+      (let ((draw (car game))
+	    (rest (cdr game)))
+	(max
+	 (aoc/day2/part2/find-amount-of-colour draw colour)
+	 (aoc/day2/part2/min-cubes-needed-of-colour rest colour)))
+    0))
+
+(defun aoc/day2/part2/find-amount-of-colour (draw colour)
+  (if draw
+      (let ((draw-colour (car (car draw)))
+	    (amount (cdr (car draw))))
+	(if (equal draw-colour colour)
+	    amount
+	  (aoc/day2/part2/find-amount-of-colour (cdr draw) colour)))
+    0))
